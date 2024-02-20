@@ -112,12 +112,12 @@ class dev(commands.Cog):
             await asyncio.sleep(0.5)
 
         if self.utility.check_white_listed(ctx.author.id):
-            for cog in self.bot.cogs_list:
+            for cog_name, cog in self.bot.cogs.items():
                 try:
-                    await self.bot.reload_extension(f"cogs.{cog}")
+                    await self.bot.reload_extension(f"cogs.{cog_name}")
                 except commands.ExtensionNotLoaded:
                     try:
-                        await self.bot.load_extension(f"cogs.{cog}")
+                        await self.bot.load_extension(f"cogs.{cog_name}")
                     except (commands.NoEntryPointError, commands.ExtensionFailed) as e:
                         embed = self.utility.format_error(ctx.author, e)
                         return await ctx.send(embed=embed, delete_after=90)
@@ -125,17 +125,17 @@ class dev(commands.Cog):
                     embed = self.utility.format_error(ctx.author, e)
                     return await ctx.send(embed=embed, delete_after=90)
 
-
             embed = self.utility.create_embed(
                 ctx.author,
                 title='success',
-                description=f'cogs ``{", ".join(self.bot.cogs_list)}`` has been reloaded!',
+                description=f'All cogs have been reloaded!',
                 color=discord.Color.green()
             )
 
             await ctx.send(embed=embed, delete_after=5)
         else:
-            await ctx.send(f"{ctx.author.mention}, you are not whitelisted contact server owner.", delete_after=5)
+            await ctx.send(f"{ctx.author.mention}, you are not whitelisted. Contact the server owner.", delete_after=5)
+
 
 
     @commands.has_permissions(administrator=True)
@@ -152,6 +152,7 @@ class dev(commands.Cog):
                 bot = ctx.guild.get_member(self.bot.user.id)
                 if ctx.author.bot:
                     return
+                
                 muted = discord.utils.get(ctx.guild.roles, name="muted")
                 if muted == None:
                     muted = await ctx.guild.create_role(name="muted", color=0xff0000)

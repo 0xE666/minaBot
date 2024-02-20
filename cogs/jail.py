@@ -114,23 +114,39 @@ class jail(commands.Cog):
             await asyncio.sleep(0.5)
 
         if self.utility.check_white_listed(ctx.author.id):
-            
-            jail_role = get(ctx.guild.roles, name="jailed")
-            if jail_role == None:
-                overwrite = discord.Permissions(view_channel=False)
-                jail_role = await ctx.guild.create_role(name="jailed", permissions=overwrite)
+            try:
+                bot = ctx.guild.get_member(self.bot.user.id)
+                if ctx.author.bot:
+                    return
+                
+                jail_role = get(ctx.guild.roles, name="jailed")
+                if jail_role == None:
+                    overwrite = discord.Permissions(view_channel=False)
+                    jail_role = await ctx.guild.create_role(name="jailed", permissions=overwrite)
+                
+                if jail_role.position > bot.top_role.position:
+                        return await ctx.reply("muted role is higher than my top role, cant manage")
 
-            jail_channel = get(ctx.guild.channels, name="jail")
-            if jail_channel == None:
-                everyone_role = get(ctx.guild.roles, name="@everyone")
-                jailed_role = get(ctx.guild.roles, name="jailed")
-                jail_channel = await ctx.guild.create_text_channel("jail")
-                await jail_channel.set_permissions(everyone_role, read_messages=False)
-                await jail_channel.set_permissions(jailed_role, read_messages=True)
+                jail_channel = get(ctx.guild.channels, name="jail")
+                if jail_channel == None:
+                    everyone_role = get(ctx.guild.roles, name="@everyone")
+                    jailed_role = get(ctx.guild.roles, name="jailed")
+                    jail_channel = await ctx.guild.create_text_channel("jail")
+                    await jail_channel.set_permissions(everyone_role, read_messages=False)
+                    await jail_channel.set_permissions(jailed_role, read_messages=True)
 
+                overwrite = ctx.channel.overwrites_for(jail_role)
+                overwrite.update(view_channel=False)
 
-            embed1 = Embed(description=f"\ncreated jail channel / role\n", color=0x2f3136, timestamp=datetime.utcnow())
-            await ctx.send(embed=embed1, delete_after=5)
+                for channel in ctx.guild.channels:
+                    await channel.set_permissions(jail_role, overwrite=overwrite)
+
+                embed1 = Embed(description=f"\ncreated jail channel / role\n", color=0x2f3136, timestamp=datetime.utcnow())
+                await ctx.send(embed=embed1, delete_after=5)
+
+            except Exception as e:
+                embed = self.utility.format_error(ctx.author, e)
+                return await ctx.send(embed=embed, delete_after=90)
 
         else:
             await ctx.send(f"{ctx.author.mention}, you are not whitelisted contact server owner.", delete_after=5)

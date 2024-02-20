@@ -1,6 +1,5 @@
 from ast import Delete
 from this import d
-from turtle import title
 import discord, time, aiohttp
 from discord.ext import commands
 from typing import Union, Any, Callable, Tuple, List, Coroutine, Optional
@@ -74,8 +73,29 @@ class emoji(commands.Cog):
                                     return await ctx.send(embed=embed, delete_after=90)
             else:
                 await ctx.send(f"{ctx.author.mention}, you are not whitelisted contact server owner.", delete_after=5)
-                            
 
+
+                            
+    @commands.command(name='rename', aliases=['rn'], description='rename emoji', help='e.g. {prefix}rename {emoji}')
+    async def rename(self, ctx: commands.Command, emoji: discord.Emoji = None, name=None):
+        await asyncio.sleep(1)
+        await ctx.message.delete()
+        async with ctx.typing():
+            await asyncio.sleep(1.5)
+
+            if self.utility.check_white_listed(ctx.author.id):
+                if emoji is None:
+                    em = discord.Embed(title="command: **rename**", description="aliases : `rename`, `rn`\nusage : `-rename {emoji} *[name]`\ne.g. : `-rename :PepeHands:`, `-rename :PepeHands: pepe_hands`", color=0x2f3136)
+                    return await ctx.send(embed=em, delete_after=10)
+                else:
+                    guild = ctx.guild
+                    if emoji.guild == guild:
+                        await emoji.edit(name=name)
+                        await ctx.send(f"emoji: {emoji.name} has been renamed to {name}.", delete_after=5)
+                    else:
+                        await ctx.send("you can only rename emojis from this server.", delete_after=5)
+            else:
+                await ctx.send(f"{ctx.author.mention}, you are not whitelisted. Contact the server owner.", delete_after=5)
 
 
 async def setup(bot: commands.Bot):
