@@ -1,0 +1,21 @@
+{
+    "bot_config": {
+        "bot_version": 1.5,
+        "bot_token": "",
+        "bot_id": "",
+        "owner_id": "759090144955072522",
+        "owner_log": "",
+        "white_listed": [
+        ],
+        "safe_whitelist": [
+            "",
+            ""
+        ],
+        "bot_color": "3092790",
+        "bot_hex": "2f3136",
+        "uwu_locked": [],
+        "ignored_channels": [
+        ],
+        "openai_api_key": ""
+    }
+}
