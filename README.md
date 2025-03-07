@@ -1,0 +1,1 @@
+this is my personal bot, it does what i need it to do, theres some cool shit in here, feel free to steal what you need to make your own or use the entirety of the code, database setup is a little complex if your going in blind so review the code
